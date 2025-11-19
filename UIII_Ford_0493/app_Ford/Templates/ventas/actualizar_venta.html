@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Actualizar Venta{% endblock %}
+
+{% block contenido %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Actualizar Venta (ID: {{ venta.id }})</h3>
+            </div>
+
+            <div class="card-body" style="background-color: #fdfdfd;">
+
+                {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                <form action="{% url 'actualizar_venta' venta.id %}" method="POST">
+                    {% csrf_token %}
+
+                    <!-- ==========================
+                         Cliente (nuevo FK)
+                    =========================== -->
+                    <div class="mb-3">
+                        <label for="cliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="cliente" name="cliente" required>
+                            {% for c in clientes %}
+                                <option value="{{ c.id }}"
+                                    {% if venta.cliente and venta.cliente.id == c.id %}selected{% endif %}>
+                                    {{ c.nombre }} {{ c.apellido }} - {{ c.telefono }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- ==========================
+                         Datos adicionales opcionales
+                    =========================== -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="cliente_nombre" class="form-label">Nombre del Cliente (extra)</label>
+                            <input type="text" 
+                                   class="form-control"
+                                   id="cliente_nombre" 
+                                   name="cliente_nombre"
+                                   value="{{ venta.cliente_nombre }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="cliente_telefono" class="form-label">Teléfono Cliente (extra)</label>
+                            <input type="text" 
+                                   class="form-control"
+                                   id="cliente_telefono" 
+                                   name="cliente_telefono"
+                                   value="{{ venta.cliente_telefono|default:'' }}">
+                        </div>
+                    </div>
+
+                    <!-- ==========================
+                         Vehículo
+                    =========================== -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="vehiculo" class="form-label">Vehículo</label>
+                            <select class="form-select" id="vehiculo" name="vehiculo" required>
+                                {% for v in vehiculos %}
+                                    <option value="{{ v.id }}"
+                                        {% if v.id == venta.vehiculo.id %}selected{% endif %}>
+                                        {{ v.marca }} {{ v.modelo }} ({{ v.anio }}) - ${{ v.precio }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="empleado" class="form-label">Empleado (Opcional)</label>
+                            <select class="form-select" id="empleado" name="empleado">
+                                <option value="">Sin empleado asignado</option>
+                                {% for e in empleados %}
+                                    <option value="{{ e.id }}"
+                                        {% if venta.empleado and e.id == venta.empleado.id %}selected{% endif %}>
+                                        {{ e.nombre }} {{ e.apellido }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ==========================
+                         Datos de venta
+                    =========================== -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="total" class="form-label">Total Venta</label>
+                            <input type="number" 
+                                   class="form-control"
+                                   id="total" 
+                                   name="total"
+                                   step="0.01"
+                                   value="{{ venta.total }}"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="metodo_pago" class="form-label">Método de Pago</label>
+                            <input type="text" 
+                                   class="form-control"
+                                   id="metodo_pago" 
+                                   name="metodo_pago"
+                                   value="{{ venta.metodo_pago|default:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="folio" class="form-label">Folio (opcional)</label>
+                        <input type="text"
+                               class="form-control"
+                               id="folio"
+                               name="folio"
+                               value="{{ venta.folio|default:'' }}">
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'ver_ventas' %}" class="btn btn-outline-secondary">Cancelar</a>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
